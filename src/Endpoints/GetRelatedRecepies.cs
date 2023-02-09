@@ -21,7 +21,6 @@ public class GetReletatedRecepiesById
 
         var response = await $"{_baseUrl}/recipes/list-similarities?recipe_id={id}"
             .WithHeader("X-RapidAPI-Key", _key)
-            .DownloadFileAsync("[local path file]");
             .GetJsonAsync<GetRecepyByIngredientsResponseDTO>();
         return Microsoft.AspNetCore.Http.Results.Ok(response);
     }
