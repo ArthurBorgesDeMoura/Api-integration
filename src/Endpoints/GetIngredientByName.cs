@@ -1,22 +1,28 @@
 ﻿using Flurl.Http;
 using IRecepiesApp.Endpoints.DTO;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace IRecepiesApp.Endpoints;
 
-public class GetReletatedRecepiesById
+public class GetIngredientsByName
 {
-    public static string Template => "/recepies/related-recepies";
+    public static string Template => "/ingredients";
     public static string[] Methods => new string[] { HttpMethod.Get.ToString() };
     public static Delegate Handle => Action;
 
-    public static async Task<IResult> Action(IConfiguration configuration, [FromQuery] int id)
+    public static async Task<IResult> Action(IConfiguration configuration, [FromQuery] string name)
     {
         string _baseUrl = configuration["RapidApi:BaseUrl"];
         string _key = configuration["RapidApi:X-RapidAPI-Key"];
-        var response = await $"{_baseUrl}/recipes/list-similarities?recipe_id={id}"
+
+        if (string.IsNullOrEmpty(name))
+            return Microsoft.AspNetCore.Http.Results.BadRequest("name is required");
+
+        var response = await $"{_baseUrl}/recipes/auto-complete?prefix={name}"
             .WithHeader("X-RapidAPI-Key", _key)
-            .GetJsonAsync<GetRecepyByIngredientsResponseDTO>();
+            .GetJsonAsync<GetIngredientsByNameResponseDTO>();
+
         return Microsoft.AspNetCore.Http.Results.Ok(response);
     }
 }
